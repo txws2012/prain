@@ -1,4 +1,4 @@
-# 清雨博客-轻博客PHP开源系统
+# 清雨博客-PHP开源博客系统
 
 #### 官方
 + 演示网站：[https://prain.cn](https://prain.cn)
