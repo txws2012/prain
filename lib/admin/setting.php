@@ -55,6 +55,20 @@
         </div>
     </div>
     <div class="form">
+        <div class="key">用户头像</div>
+        <div class="value">
+            <input type="hidden" class="avatar" name="avatar" value="{$conf.avatar}"/>
+            <img class="avatar" src="{$conf.avatar}" alt=""/>
+            <div class="btn bg-orange" onclick="uploadAvatar()">上传</div>
+        </div>
+    </div>
+    <div class="form">
+        <div class="key">用户名</div>
+        <div class="value">
+            <input type="username" name="username" placeholder="用户名" value="{$conf.username}"/>
+        </div>
+    </div>
+    <div class="form">
         <div class="key">登录密码</div>
         <div class="value">
             <input type="password" name="password" placeholder="新密码" value=""/>
@@ -113,6 +127,17 @@
         </div>
     </div>
     <div class="form">
+        <div class="key">缩略图</div>
+        <div class="value">
+            <label><input name="thumbOpen" type="checkbox" value="1" {if $conf.thumb.open}checked{/if}/>开启</label>
+            宽度：<input type="text" name="thumbWidth" style="width:80px;margin-right:20px;" placeholder="宽" value="{$conf.thumb.width}"/>
+            高度：<input type="text" name="thumbHeight" style="width:80px;margin-right:20px;" placeholder="高" value="{$conf.thumb.height}"/>
+            <label><input name="thumbType" type="radio" value="1" {if $conf.thumb.type==1:checked}/>裁剪缩略</label>
+            <label><input name="thumbType" type="radio" value="2" {if $conf.thumb.type==2:checked}/>等比例缩略</label>
+            <small>生成文章上传图片生成缩略图的宽高设置</small>
+        </div>
+    </div>
+    <div class="form">
         <div class="key">验证码</div>
         <div class="value">
             <label><input name="vcodeOpen" type="checkbox" value="1" {if $conf.vcode.open}checked{/if}/>开启</label>
@@ -158,5 +183,14 @@
     <!-- hook.admin_setting_bottom -->
     <div class="center"><input type="submit" class="btn bg-blue" value="提交"/></div>
 </form>
+<script>
+    function uploadAvatar(){
+        sx.upload({
+            el:'.avatar',
+            path:'/lib/img',
+            name:'avatar.png'
+        })
+    }
+</script>
 <!-- hook.admin_setting_footer -->
 {include footer}

@@ -216,9 +216,9 @@ class Upload{
                     'uploadName'=>$this->file['name'],
                     'newName'=>$name,
                     'ext'=>$ext,
-                    'url'=> ($this->domain ? getHost().HOME : '').$this->uploadPath . $name,
+                    'url'=> ($this->domain ? getHost().HOME : '/').$this->uploadPath . $name,
                     'size'=>$this->file['size'],
-                    'thumb'=>$t?$this->imgThumb($this->path.$name,$t['width'],$t['height'],$t['clip'],$t['pre']):''
+                    'thumb'=>$t?imgThumb($this->path.$name,$t['width'],$t['height'],$t['clip'],$t['pre']):''
                 ];
             }else{
                 throw new Exception('文件上传失败');
@@ -257,9 +257,9 @@ class Upload{
                         'uploadName'=>$v['name'],
                         'name'=>$name,
                         'ext'=>$ext,
-                        'url'=>($this->domain ? getHost().HOME : '').$this->uploadPath.$name,
+                        'url'=>($this->domain ? getHost().HOME : '/').$this->uploadPath.$name,
                         'size'=>$v['size'],
-                        'thumb'=>$t?$this->imgThumb($this->path.$name,$t['width'],$t['height'],$t['clip'],$t['pre']):''
+                        'thumb'=>$t?imgThumb($this->path.$name,$t['width'],$t['height'],$t['clip'],$t['pre']):''
                     ];
                 } else {
                     throw new Exception('文件上传失败');
@@ -284,98 +284,6 @@ class Upload{
      */
     public function setImgThumb($width=300, $height=300, $clip=true, $pre='thumb_'){
         $this->imgThumb=['width'=>$width,'height'=>$height,'clip'=>$clip,'pre'=>$pre];
-    }
-
-    /**
-     * 生成缩略图：
-     * @param string $imgUrl 图片的完整路径
-     * @param int $width 缩略图宽度
-     * @param int $height 缩略图高度
-     * @param bool $clip true:裁剪缩略 false:全图等比例缩略
-     * @param string $pre 缩缩略图前缀
-     * @return array
-     */
-    public function imgThumb($imgUrl, $width=300, $height=300, $clip=true, $pre='thumb_'){
-        $ext = strtolower(substr(strrchr($imgUrl, '.'), 1));
-        //获取图片的基本信息
-        $info = getimagesize($imgUrl);
-        $w = $info[0];
-        $h = $info[1];
-        $img = 0;
-        switch($info[2]) {
-            case 1 :
-                $img = imagecreatefromgif($imgUrl);
-                break;
-            case 2 :
-                $img = imagecreatefromjpeg($imgUrl);
-                break;
-            case 3 :
-                $img = imagecreatefrompng($imgUrl);
-                break;
-            case 6 :
-                $img = imagecreatefrombmp($imgUrl);
-                break;
-            case 15 :
-                $img = imagecreatefromwbmp($imgUrl);
-                break;
-            case 18 :
-                $img = imagecreatefromwebp($imgUrl);
-                break;
-        }
-        if(!$img) return [];
-
-        $src_scale  = $h / $w;
-        $dst_scale  = $height / $width;
-        //原图为长图
-        if ($src_scale > $dst_scale){
-            $clip_w  = $w;
-            $clip_h = $w * $dst_scale;
-        }
-        //原图为宽图
-        elseif ($src_scale < $dst_scale){
-            $clip_w  = $h / $dst_scale;
-            $clip_h = $h;
-        }
-        //原图为方图
-        else{
-            $clip_w  = $w;
-            $clip_h = $h;
-        }
-        if($clip){
-            //设置透明
-            $new_img = imagecreatetruecolor($width, $height); // 创建目标图
-            $color=imagecolorallocate($new_img,255,255,255); //上色 
-            imagecolortransparent($new_img,$color); //设置透明 
-            imagefill($new_img,0,0,$color); //填充
-            imagecopyresampled($new_img, $img, 0, 0, 0, 0, $width, $height, $clip_w, $clip_h);
-        }else{
-            $scale = min($width/$w, $height/$h);
-            $clip_w = $w*$scale;
-            $clip_h = $h*$scale;
-            //设置透明
-            $new_img = imagecreatetruecolor($clip_w, $clip_h); // 创建目标图
-            $color=imagecolorallocate($new_img,255,255,255); //上色 
-            imagecolortransparent($new_img,$color); //设置透明 
-            imagefill($new_img,0,0,$color); //填充
-            //缩放
-            imagecopyresampled($new_img, $img, 0, 0, 0, 0, $clip_w, $clip_h, $w, $h);
-        }
-        $picInfo = pathinfo($imgUrl); //解析源图像的名与路径信息
-        $name = $pre.$picInfo['filename'].'.'.$picInfo['extension'];
-        $new_imgUrl = $picInfo['dirname'].'/'.$name;
-        switch($ext){
-            case 'jpg': imagejpeg($new_img, $new_imgUrl); break;
-            case 'gif': imagegif($new_img, $new_imgUrl); break;
-            case 'png': imagepng($new_img, $new_imgUrl); break;
-            case 'bmp': imagewbmp($new_img, $new_imgUrl); break;
-        }
-        //释放图片资源
-        imagedestroy($img);
-        imagedestroy($new_img);
-        return [
-            'url'=>($this->domain ? getHost().HOME : '').$this->uploadPath.$name,
-            'size'=>filesize($new_imgUrl)
-        ];
     }
 }
 ?>

@@ -89,6 +89,8 @@ table th{vertical-align:bottom;border-bottom:none;white-space:nowrap;padding:6px
 .title::before{content:"";width:3px;height:12px;background:#3B4071;display:inline-block;margin-right:5px}
 .title span{display:inline-block;margin-left:5px;color:#4CAF50}
 .title a{margin:0px 5px}
+.avatar{height:50px;width:50px;border-radius:50px;margin-right:10px;vertical-align:middle}
+.avatar[src='']{display:none}
 .form-row{min-height:27px;line-height:27px;font-size:16px;width:100%;background:inherit;overflow:hidden;position:relative;margin:10px 0px;clear:both;display:flex;flex-wrap:wrap;align-items:flex-start;padding-left:10px}
 .form-row::before{content:"";width:3px;height:14px;background:#4A4A4A;position:absolute;top:7px;left:0px}
 .form-row .btn{margin:0px}
@@ -237,7 +239,7 @@ table th{vertical-align:bottom;border-bottom:none;white-space:nowrap;padding:6px
 .app-develop{text-align:center}
 .app-develop .app-intro{max-width:500px;white-space:break-spaces}
 .app-develop .app-list-remark{max-width:280px;white-space:initial}
-.pay-popup .popup-main{width:430px;height:255px}
+.pay-popup .popup-main{width: 490px;height:255px}
 .pay-content{position:relative}
 .pay-qrcode{width:120px;text-align:center;display:inline-block}
 .pay-qrcode img{width:120px;display:inline-block!important}

@@ -239,9 +239,9 @@ function upload($arr=[]){
 	$arr['size'] = isset($arr['size']) ? $arr['size'] : 100;
 	$arr['ext'] = isset($arr['ext']) ? $arr['ext'] : false;
 	$arr['imgThumb'] = isset($arr['imgThumb']) ? $arr['imgThumb'] : false;
-	$arr['domain'] = isset($arr['domain']) ? $arr['domain'] : true;
+	$arr['domain'] = isset($arr['domain']) ? $arr['domain'] : false;
 	$up = new Upload($arr['inputName'],$arr['path'],$arr['name']);
-	$up->domain = $arr['domain'];
+	$up->domain = !$arr['domain'] || $arr['domain'] == 'false'?false:true;
 	$up->setMaxSize($arr['size']);
 	$up->setNameType($arr['nameType']);
 	if($arr['ext']) $up->setAllowExt($arr['ext']);

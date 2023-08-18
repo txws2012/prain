@@ -4,7 +4,7 @@
 			<!-- hook.admin_footer -->
 			<div class="footer-bar">
 				<div class="footer-left">
-					<span>开源系统 - <a href="https://xueluo.cn/prain" target="_blank">点色 v{#V}</a></span>
+					<span>开源系统 - <a href="https://xueluo.cn/prain" target="_blank">清雨 v{#V}</a></span>
 				</div>
 				<div class="footer-right">
 					<span>RunTime: {#getRunTime()} s</span>

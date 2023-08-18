@@ -7,6 +7,8 @@ return array (
   'key' => '',
   'desc' => '',
   'brief' => 40,
+  'avatar' => '/lib/style/logo.svg',
+  'username' => '清雨',
   'password' => '',
   'tpl' => 'default',
   'compile' => true,
@@ -22,6 +24,13 @@ return array (
     'restrict' => 20,
     'paging' => 30,
     'count' => 0,
+  ),
+  'thumb' => 
+  array (
+    'open' => true,
+    'width' => 300,
+    'height' => 300,
+    'type' => 1,
   ),
   'vcode' => 
   array (

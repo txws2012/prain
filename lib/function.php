@@ -615,4 +615,81 @@ function curl($url, $params = [], $method = 'POST', $cookie = ''){
     curl_close($ch);
     return $response;
 }
+/**
+ * 生成缩略图：
+ * @param string $imgUrl 图片的完整路径
+ * @param int $width 缩略图宽度
+ * @param int $height 缩略图高度
+ * @param bool $clip true:裁剪缩略 false:全图等比例缩略
+ * @param string $pre 缩缩略图前缀
+ * @return string
+ */
+function imgThumb($imgUrl, $width=300, $height=300, $clip=true, $pre='thumb_'){
+	if(!$imgUrl) return '';
+	if(preg_match("/^https?\:/i",$imgUrl)) return '';
+	$imgInfo = pathinfo($imgUrl);
+	$thumbUrl = $imgInfo['dirname'].'/'.$pre.$imgInfo['filename'].'.'.$imgInfo['extension'];
+	$imgUrl = str_replace('//','/',ROOT.$imgUrl);
+	$newImgUrl = str_replace('//','/',ROOT.$thumbUrl);
+	if(!is_file($imgUrl)) return '';
+	$info = getimagesize($imgUrl);
+	$w = $info[0];
+	$h = $info[1];
+	$img = 0;
+	switch($info[2]){
+		case 1: $img = imagecreatefromgif($imgUrl); break;
+		case 2: $img = imagecreatefromjpeg($imgUrl); break;
+		case 3: $img = imagecreatefrompng($imgUrl); break;
+		case 6: $img = imagecreatefrombmp($imgUrl); break;
+		case 18: $img = imagecreatefromwebp($imgUrl); break;
+	}
+	if(!$img) return '';
+	$srcScale  = $h / $w;
+	$dstScale  = $height / $width;
+	//原图为长图
+	if ($srcScale > $dstScale){
+		$clipW  = $w;
+		$clipH = $w * $dstScale;
+	}
+	//原图为宽图
+	elseif ($srcScale < $dstScale){
+		$clipW  = $h / $dstScale;
+		$clipH = $h;
+	}
+	//原图为方图
+	else{
+		$clipW  = $w;
+		$clipH = $h;
+	}
+	if($clip){
+		//设置透明
+		$newImg = imagecreatetruecolor($width, $height); // 创建目标图
+		$color=imagecolorallocate($newImg,255,255,255); //上色 
+		imagecolortransparent($newImg,$color); //设置透明 
+		imagefill($newImg,0,0,$color); //填充
+		imagecopyresampled($newImg, $img, 0, 0, 0, 0, $width, $height, $clipW, $clipH);
+	}else{
+		$scale = min($width/$w, $height/$h);
+		$clipW = $w*$scale;
+		$clipH = $h*$scale;
+		//设置透明
+		$newImg = imagecreatetruecolor($clipW, $clipH); // 创建目标图
+		$color=imagecolorallocate($newImg,255,255,255); //上色 
+		imagecolortransparent($newImg,$color); //设置透明 
+		imagefill($newImg,0,0,$color); //填充
+		//缩放
+		imagecopyresampled($newImg, $img, 0, 0, 0, 0, $clipW, $clipH, $w, $h);
+	}
+	switch($imgInfo['extension']){
+		case 'jpg': imagejpeg($newImg, $newImgUrl); break;
+		case 'gif': imagegif($newImg, $newImgUrl); break;
+		case 'png': imagepng($newImg, $newImgUrl); break;
+		case 'bmp': imagewbmp($newImg, $newImgUrl); break;
+		case 'webp': imagewebp($newImg, $newImgUrl); break;
+	}
+	//释放图片资源
+	imagedestroy($img);
+	imagedestroy($newImg);
+	return $thumbUrl;
+}
 ?>

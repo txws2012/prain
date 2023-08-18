@@ -22,7 +22,7 @@ define('LOGIN', isset($_SESSION['login'])?$_SESSION['login']:false);
 //官网API接口地址
 define('API_HOST','https://prain.cn/api/');
 //清雨版本
-define('V','1.2.5');
+define('V','1.2.6');
 
 //引入库
 include LIB.'function.php';
@@ -716,9 +716,12 @@ switch($page){
 							$html = preg_replace('/[\r\n]+/','',$html);
 							$intro =  mb_substr($html,0,$conf['brief'],'utf-8');
 						}
-						//获取第一张图片
-						preg_match('/(\[img (.*?\.(jpg|jpeg|png|gif|bmp|tif)).*?\])/i', $content, $img);
-						$img = $img ? $img[2] : false;
+						// 缩略图
+						$img = '';
+						if($conf['thumb']['open']){
+							preg_match('/(\[img (.*?\.(jpg|jpeg|png|gif|bmp|webp)).*?\])/i', $content, $img);
+							$img = $img ? imgThumb($img[2], $conf['thumb']['width'], $conf['thumb']['height'], $conf['thumb']['type']==1) : '';
+						}
 						$path = 'article/'.$id;
 						if(dbSave($path,$content)){
 							$post = [
@@ -779,18 +782,15 @@ switch($page){
 							$html = preg_replace('/[\r\n]+/','',$html);
 							$intro =  mb_substr($html,0,$conf['brief'],'utf-8');
 						}
-						//获取第一张图片
-						$img = false;
-						if(strpos($content,'[!img]') === false){
-							preg_match('/img (src\s*=\s*[\'|"]+)?(.*?\.(jpg|jpeg|png|gif|bmp|tif))/i', $content, $img);
-							$img = $img ? $img[2] : false;
+						// 缩略图
+						$img = '';
+						if($conf['thumb']['open']){
+							preg_match('/(\[img (.*?\.(jpg|jpeg|png|gif|bmp|webp)).*?\])/i', $content, $img);
+							$img = $img ? imgThumb($img[2], $conf['thumb']['width'], $conf['thumb']['height'], $conf['thumb']['type']==1) : '';
 						}
 						//判断编辑的文档是不是为上个文档的url，不是的话，删除旧有的数据，建立新数据
 						$name = post('id','trim');
 						$newId = empty($name)?'T'.time():$name;
-						$cid = post('cid','trim');
-						//从内容中提取时间
-						preg_match('/\[\s*时间\s*\]\s*([\d\-\:\s]+)/i', $content, $match);
 						$tag = post('tag','trim');
 						$tag = $tag ? preg_split('/\s+/', (string)$tag) : [];
 						if($newId != $id){
@@ -853,6 +853,8 @@ switch($page){
 					$conf['key'] = post('key','str','');
 					$conf['desc'] = post('desc','str','');
 					$conf['brief'] = post('brief','int',0);
+					$conf['avatar'] = post('avatar','str','');
+					$conf['username'] = post('username','str','');
 					$password = post('password','str');
 					$conf['password'] = strlen((string)$password) ? md5((string)$password) : $conf['password'];
 					$compile = post('compile','bool');
@@ -870,9 +872,13 @@ switch($page){
 					$conf['comment']['paging'] = post('commentPaging','int',$conf['comment']['paging']);
 					$conf['article']['paging'] = post('articlePaging','int',$conf['article']['paging']);
 					$conf['vcode']['open'] = post('vcodeOpen','bool',false);
-					$conf['vcode']['width'] = post('vcodeWidth','int',80);
-					$conf['vcode']['height'] = post('vcodeHeight','int',32);
+					$conf['vcode']['width'] = post('vcodeWidth','int',86);
+					$conf['vcode']['height'] = post('vcodeHeight','int',28);
 					$conf['vcode']['length'] = post('vcodeLength','int',4);
+					$conf['thumb']['open'] = post('thumbOpen','bool',false);
+					$conf['thumb']['width'] = post('thumbWidth','int',300);
+					$conf['thumb']['height'] = post('thumbHeight','int',300);
+					$conf['thumb']['type'] = post('thumbType','int',1);
 					$conf['icp'] = post('icp','str','');
 					$conf['prn'] = post('prn','str','');
 					$conf['views'] = post('views','int',0);

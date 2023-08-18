@@ -31,7 +31,7 @@ if(($page == 'admin' && $adminPage == 'app') || $page == 'pay'){
 		$tpl = getTpl();
 		$ext = getExt();
 		$res = curl('https://prain.cn/api/'.$url,array_merge($userKey,[
-			'appVersion' => '1.0.8',
+			'appVersion' => '1.0.9',
 			'system'=>[
 				'version'=>V,
 				'dbVersion'=>$conf['db']['version']
@@ -57,8 +57,9 @@ if(($page == 'admin' && $adminPage == 'app') || $page == 'pay'){
 		!$id && errorMsg('ID参数不能为空');
 		if($payType == 'create'){
 			$res = getApi('pay/create',['id'=>$id]);
-			$res['error'] && errorMsg($res['message']);
-			href($res['data']['pay_url']);
+			$res['error'] && err($res['message']);
+			// 微信支付：href($res['data']['pay_url']);
+			ret($res['data']['pay_url']);
 		}
 		elseif($payType == 'select'){
 			$res = getApi('pay/select',['id'=>$id]);
@@ -169,12 +170,7 @@ if($page == 'admin' && $adminPage == 'app'){
 		//账号设置
 		if($appType == 'settingUpdate'){
 			if($method == 'POST'){
-				$param['password'] = post('password','str','');
-				$param['contact'] = post('contact','str','');
-				$param['mail'] = post('mail','str','');
-				$param['home'] = post('home','str','');
-				$param['intro'] = post('intro','str','');
-				$res = getApi('user/'.$appType,$param);
+				$res = getApi('user/'.$appType,$_POST);
 				$res['error'] ? err($res['message']) : msg($res['message']);
 			}
 		}

@@ -3,7 +3,7 @@
 //#不做处理
 //@数据库文件夹
 return [
-  '#version' => '1.1.3',
+  '#version' => '1.1.5',
   '@article' => [
     'type' => 'files',
   ],
@@ -13,6 +13,8 @@ return [
       'id' => 0,
       'pid' => 0,
       'admin' => 0,
+	  'name' => '',
+	  'contact' => '',
       'content' => '',
       'ip' => '',
       'time' => 0,
@@ -52,6 +54,8 @@ return [
       'key' => '',
       'desc' => '',
       'brief' => 40,
+      'avatar' => '/lib/style/logo.svg',
+      'username' => '清雨',
       'password' => '',
       'tpl' => '',
       'compile' => false,
@@ -65,6 +69,12 @@ return [
         'restrict' => 20,
         'paging' => 30,
         'count' => 0,
+      ],
+      'thumb' => [
+        'open' => true,
+        'width' => 300,
+        'height' => 300,
+        'type' => 1,
       ],
       'vcode' => [
         'open' => true,
@@ -81,13 +91,13 @@ return [
       'navbar' => [
         [
           'name' => '首页',
-          'url' => '/index',
+          'url' => '/',
           'target' => 0,
           'child' => [],
         ],
         [
           'name' => '留言',
-          'url' => '/message',
+          'url' => '/?message',
           'target' => 0,
           'child' => [],
         ],
