@@ -216,7 +216,7 @@ class Upload{
                     'uploadName'=>$this->file['name'],
                     'newName'=>$name,
                     'ext'=>$ext,
-                    'url'=> ($this->domain ? getHost().HOME : '/').$this->uploadPath . $name,
+                    'url'=> ($this->domain ? getHost().HOME : HOME).$this->uploadPath . $name,
                     'size'=>$this->file['size'],
                     'thumb'=>$t?imgThumb($this->path.$name,$t['width'],$t['height'],$t['clip'],$t['pre']):''
                 ];
@@ -257,7 +257,7 @@ class Upload{
                         'uploadName'=>$v['name'],
                         'name'=>$name,
                         'ext'=>$ext,
-                        'url'=>($this->domain ? getHost().HOME : '/').$this->uploadPath.$name,
+                        'url'=>($this->domain ? getHost().HOME : HOME).$this->uploadPath.$name,
                         'size'=>$v['size'],
                         'thumb'=>$t?imgThumb($this->path.$name,$t['width'],$t['height'],$t['clip'],$t['pre']):''
                     ];
