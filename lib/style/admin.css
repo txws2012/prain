@@ -212,7 +212,7 @@ table th{vertical-align:bottom;border-bottom:none;white-space:nowrap;padding:6px
 .app-list-intro{color:#999999;max-width:400px;text-overflow:ellipsis;overflow:hidden}
 .app-view{margin-top:20px}
 .app-view-main{display:flex;margin-bottom:30px}
-.app-view-img{flex:0 0 250px;width:250px;height:250px;overflow:hidden;border-radius:5px;box-shadow:rgba(0,0,0,0.2) 1px 1px 9px;margin-right:50px;position:relative}
+.app-view-img{flex:0 0 250px;width:250px;height:250px;overflow:hidden;border-radius:5px;margin-right:50px;position:relative}
 .app-view-img img{width:100%;display:block}
 .app-view-free{position:absolute;top:3px;right:-47px;background:#4CAF50;color:#FFF;padding:3px 50px;transform:rotate(45deg);font-size:13px}
 .app-view-content{margin-bottom:20px}

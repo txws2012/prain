@@ -22,7 +22,7 @@ define('LOGIN', isset($_SESSION['login'])?$_SESSION['login']:false);
 //官网API接口地址
 define('API_HOST','https://prain.cn/api/');
 //清雨版本
-define('V','1.2.6');
+define('V','1.2.7');
 
 //引入库
 include LIB.'function.php';
@@ -152,7 +152,7 @@ if(!$conf['install']){
 			$conf['install'] = post('install','bool',$conf['install']);
 			if($conf['password']){
 				$tpl->compile();
-				dbSave('conf',$conf);
+				conf($conf);
 			}
 			jump();
 		}
@@ -224,7 +224,7 @@ switch($page){
 		$pageSize = $conf['article']['paging'];
 		$article = getArticle(LOGIN?[]:['isPrivate'=>0],['createTime'=>1],'index/{page}',$pageNum,$pageSize);
 		foreach($hook['model_index'] as $fn) $fn();
-		include $tpl->view('index');
+		include $tpl->view($page);
 		break;
 
 	//分类
@@ -283,7 +283,7 @@ switch($page){
 			delComment('comment/'.$articleId,$commentId);
 			commentsInit($articleId);
 			foreach($hook['model_comment_delete_success'] as $fn) $fn();
-			jump($articleId);
+			jump($articleId.'#comment');
 		}
 
 		//添加留言
@@ -326,7 +326,7 @@ switch($page){
 				$comment[] = $post;
 				dbSave($path,$comment);
 				$conf['comment']['count'] += 1;
-				dbSave('conf',$conf);
+				conf('comment',$conf['comment']);
 				$_SESSION['commentCount'] += 1;
 				unset($_SESSION['vcode']);
 				commentsInit($articleId);
@@ -526,7 +526,7 @@ switch($page){
 
 					}
 					foreach($hook['admin_model_navbar'] as $fn) $fn();
-					dbUpdate('conf',['navbar'=>$post]);
+					conf('navbar',$post);
 					msg('保存成功');
 				}
 				include $adminTpl->view('navbar');
@@ -578,7 +578,7 @@ switch($page){
 					}
 					if($isModify) dbSave('article',$articleList);
 					foreach($hook['admin_model_category'] as $fn) $fn();
-					dbUpdate('conf',['category'=>$post]);
+					conf('category',$post);
 					categoryInit();
 					msg('保存成功');
 				}
@@ -604,7 +604,7 @@ switch($page){
 						}
 					}
 					foreach($hook['admin_model_link'] as $fn) $fn();
-					dbUpdate('conf',['link'=>$post]);
+					conf('link',$post);
 					msg('保存成功');
 				}
 				include $adminTpl->view('link');
@@ -655,7 +655,7 @@ switch($page){
 							}
 						}
 						foreach($hook['admin_model_article_delete'] as $fn) $fn();
-						dbSave('conf',$conf);
+						conf('article',$conf['article']);
 						dbSave('article',$articleList);
 						tagInit();
 						categoryInit();
@@ -734,8 +734,8 @@ switch($page){
 								'tag'=>$tag,
 								'isTop'=>post('isTop','int',0),
 								'isPrivate'=>post('isPrivate','int',0),
-								'isComment'=>post('isComment','int',1),
-								'isFk'=>post('isFk','int',1),
+								'isComment'=>post('isComment','int',0),
+								'isFk'=>post('isFk','int',0),
 								'views'=>0,
 								'comments'=>0,
 								'updateTime'=>time(),
@@ -744,7 +744,7 @@ switch($page){
 							foreach($hook['admin_model_article_create'] as $fn) $fn();
 							$articleList[$id] = $post;
 							$conf['article']['count'] = count($articleList);
-							dbSave('conf',$conf);
+							conf('article',$conf['article']);
 							if(!dbSave('article',$articleList)){
 								dbDelete($path);
 							}
@@ -810,8 +810,8 @@ switch($page){
 								'tag'=>$tag,
 								'isTop'=>post('isTop','int',0),
 								'isPrivate'=>post('isPrivate','int',0),
-								'isComment'=>post('isComment','int',1),
-								'isFk'=>post('isFk','int',1),
+								'isComment'=>post('isComment','int',0),
+								'isFk'=>post('isFk','int',0),
 								'views'=>$article['views'],
 								'comments'=>$article['comments'],
 								'updateTime'=>time(),
@@ -885,7 +885,7 @@ switch($page){
 					$conf['blacklist'] = post('blacklist','str','');
 					$conf['js'] = post('js','str','');
 					foreach($hook['admin_model_setting'] as $fn) $fn();
-					dbSave('conf',$conf);
+					conf($conf);
 					header('Location:'.HOME.($conf['rewrite']?'':'?').'admin/setting');
 				}
 				include $adminTpl->view('setting');
@@ -915,7 +915,7 @@ switch($page){
 						foreach($hook['admin_model_tpl_install'] as $fn) $fn();
 						$installPath = ROOT.'tpl/'.$conf['tpl'].'/install.php';
 						if(is_file($installPath)) include $installPath;
-						dbSave('conf',$conf);
+						conf('tpl',$conf['tpl']);
 					}
 					elseif($tplPage == 'delete'){
 						foreach($hook['admin_model_tpl_delete'] as $fn) $fn();
@@ -957,7 +957,7 @@ switch($page){
 						if(!isset($conf['ext'][$extId])){
 							$conf['ext'][$extId] = 1;
 							foreach($hook['admin_model_ext_install'] as $fn) $fn();
-							dbSave('conf',$conf);
+							conf('ext',$conf['ext']);
 							$installPath = EXT.$extId.'/install.php';
 							if(is_file($installPath)) include $installPath;
 						}
@@ -966,7 +966,7 @@ switch($page){
 						if(isset($conf['ext'][$extId])){
 							unset($conf['ext'][$extId]);
 							foreach($hook['admin_model_ext_uninstall'] as $fn) $fn();
-							dbSave('conf',$conf);
+							conf('ext',$conf['ext']);
 							$uninstallPath = EXT.$extId.'/uninstall.php';
 							if(is_file($uninstallPath)) include $uninstallPath;
 						}
@@ -1045,7 +1045,7 @@ switch($page){
 		//留言板
 		$pageNum = get(1,'int',1);
 		$pageSize = $conf['comment']['paging'];
-		$comment = getComment($id,[],[],$id.'/{page}',$pageNum,$pageSize);
+		$comment = getComment($id,[],[],$id.'/{page}#comment',$pageNum,$pageSize);
 
 		//更新浏览量
 		if(!in_array($id,$_SESSION['views'])){
@@ -1054,6 +1054,6 @@ switch($page){
 			dbSave('article',$articleList);
 		}
 		foreach($hook['model_default_page_filter'] as $fn) $fn();
-		include $tpl->view('page');
+		include $tpl->view($page);
 }
 ?>

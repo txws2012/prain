@@ -5,6 +5,12 @@
 .fk hr{height:1px;overflow:hidden;border:none;background:#d5d5d5;}
 .fk ol,.fk ul{padding-left:2em;}
 .fk li{margin-bottom:2px;}
+.fk h1{font-size:36px;}
+.fk h2{font-size:24px;}
+.fk h3{font-size:21px;}
+.fk h4{font-size:18px;}
+.fk h5{font-size:16px;}
+.fk h6{font-size:14px;}
 .fk h1, .fk h2, .fk h3, .fk h4, .fk h5, .fk h6{margin-bottom: 10px;padding-top: 10px;color: #000;}
 .fk-h1{font-size:36px;font-weight:bold;margin-bottom: 10px;padding-top: 10px;}
 .fk-h2{font-size:24px;font-weight:bold;margin-bottom: 10px;padding-top: 10px;}

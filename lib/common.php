@@ -187,6 +187,59 @@ function dbSync($list){
 	dbSave('conf',$conf);
 }
 /**
+ * 获取或更新conf配置
+ * @param string|array $name
+ * @param string|array $data
+ * @return int|bool
+ */
+function conf($name=null,$data=null){
+	$path = DB.'conf.php';
+	$conf = include $path;
+	if(gettype($name) == 'array'){
+		foreach($name as $k => $v){
+			$conf[$k] = $v;
+		}
+		return file_put_contents($path, "<?php\nreturn ".var_export($conf, true).";\n?>");
+	}
+	if($data !== null){
+		$conf[$name] = $data;
+		return file_put_contents($path, "<?php\nreturn ".var_export($conf, true).";\n?>");
+	}
+	return $name !== null ? (isset($conf[$name]) ? $conf[$name] : false) : $conf;
+}
+/**
+ * 获取或更新扩展中的配置
+ * ini('demo','a',1) //设置a=1
+ * ini('demo',['b'=>2,'c'=>3]) //设置b=2,c=3
+ * ini('demo',['d'=>4,'e'=>5],true) //清空之前的所有数据，然后设置d=4,e=5,
+ * ini('demo') //获取demo中的所有数据
+ * ini('demo','a') //获取demo中的a数据
+ * @param string $name 扩展名称
+ * @param string|array $key 获取或保存的key
+ * @param mix $value 需保存的数据
+ * @return mix
+ */
+function ini($name,$key=null,$value=null){
+	global $ini;
+	if(!isset($ini[$name])) $ini[$name] = [];
+	if(gettype($key) == 'array'){
+		if($value === true) $ini[$name] = [];
+		foreach($key as $k => $v){
+			$ini[$name][$k] = $v;
+		}
+		return dbSave('ini',$ini);
+	}
+	if($key === false){
+		unset($ini[$name]);
+		return dbSave('ini',$ini);
+	}
+	if($value !== null){
+		$ini[$name][$key] = $value;
+		return dbSave('ini',$ini);
+	}
+	return $key !== null ? (isset($ini[$name][$key]) ? $ini[$name][$key] : false) : $ini[$name];
+}
+/**
  * 获取token
  * @param bool $sign 是否重置签名
  * @return string
@@ -233,7 +286,7 @@ function upload($arr=[]){
 	global $hook;
 	include LIB.'upload.class.php';
 	$arr['inputName'] = isset($arr['inputName']) ? $arr['inputName'] : 'file';
-	$arr['path'] = isset($arr['path']) ? $arr['path'] : 'db/upload/';
+	$arr['path'] = isset($arr['path']) ? $arr['path'] : 'db/upload/'.date('Ym',time()).'/';
 	$arr['nameType'] = isset($arr['nameType']) ? $arr['nameType'] : 'time';
 	$arr['name'] = isset($arr['name']) ? $arr['name'] : false;
 	$arr['size'] = isset($arr['size']) ? $arr['size'] : 100;
@@ -273,38 +326,6 @@ function hook($name,$html){
     }else{
     	$hook[$name][] = gettype($html) == 'object' ? $html : function()use($html){echo $html;};
     }
-}
-/**
- * 获取或保存扩展中的配置
- * ini('demo','a',1) //设置a=1
- * ini('demo',['b'=>2,'c'=>3]) //设置b=2,c=3
- * ini('demo',['d'=>4,'e'=>5],true) //清空之前的所有数据，然后设置d=4,e=5,
- * ini('demo') //获取demo中的所有数据
- * ini('demo','a') //获取demo中的a数据
- * @param string $name 扩展名称
- * @param string|array $key 获取或保存的key
- * @param mix $value 需保存的数据
- * @return mix
- */
-function ini($name,$key=null,$value=null){
-	global $ini;
-	if(!isset($ini[$name])) $ini[$name] = [];
-	if(gettype($key) == 'array'){
-		if($value === true) $ini[$name] = [];
-		foreach($key as $k => $v){
-			$ini[$name][$k] = $v;
-		}
-		return dbSave('ini',$ini);
-	}
-	if($key === false){
-		unset($ini[$name]);
-		return dbSave('ini',$ini);
-	}
-	if($value !== null){
-		$ini[$name][$key] = $value;
-		return dbSave('ini',$ini);
-	}
-	return $key !== null ? (isset($ini[$name][$key]) ? $ini[$name][$key] : false) : $ini[$name];
 }
 /**
  * 网站提示
@@ -756,12 +777,13 @@ function commentsInit($id){
 function getComment($id, $cond = [], $orderby = [], $url = false, $page = 0, $pagesize = 0){
 	$comment = db('comment/'.$id);
 	$comment = arrWhere($comment,$cond, $orderby);
+	$comments = arrWhere($comment,['pid'=>0]);
 	$arr = [];
 	$arr['count'] = count($comment);
 	$comment = array_reverse(arrTree($comment));
 	$arr['list'] = arrPages($comment,$page, $pagesize);
 	$arr['html'] = getCommentHtml($arr['list']);
-	if($url) $arr['paging'] = pagesInit($url, $arr['count'], $page, $pagesize);
+	if($url) $arr['paging'] = pagesInit($url, count($comments), $page, $pagesize);
 	return $arr;
 }
 /**
@@ -773,7 +795,7 @@ function getCommentHtml($list){
 	if(!$list) return '';
 	$html = '<ul class="comment-list">';
 	foreach ($list as $v) {
-		$html .= '<li id="comment-'.$v['id'].'"><div class="comment-box'.($v['admin'] ? ' comment-admin' : '').'"><div class="comment-title"><span class="comment-user id-'.$v['id'].'">'.(isset($v['admin']) && $v['admin'] ? '作者':(isset($v['name']) ? $v['name'].($v['contact']?' ('.$v['contact'].')':'') : '游客 ('.$v['ip'].')')).'</span><span class="comment-time">'.humanDate($v['time']).'</span><span class="comment-reply" onclick="SX.reply('.$v['id'].');">回复</span>'.(LOGIN ? '<a href="'.URL.'comment/delete/'.get(0).'/'.$v['id'].'" data-pjax="false" onclick="return SX.confirm(this,\'确实要删除吗？删除不可恢复！\')">删除</a>' : '').'</div><div class="comment-content"><p>'.implode('</p><p>', explode("\r\n",$v['content'])).'</p></div></div>';
+		$html .= '<li id="comment-'.$v['id'].'"><div class="comment-box'.($v['admin'] ? ' comment-admin' : '').'"><div class="comment-title"><span class="comment-user id-'.$v['id'].'">'.(isset($v['admin']) && $v['admin'] ? '作者':(isset($v['name'])&&$v['name'] ? $v['name'].(isset($v['contact'])&&$v['contact']?' ('.$v['contact'].')':'') : '游客 ('.$v['ip'].')')).'</span><span class="comment-time">'.humanDate($v['time']).'</span><span class="comment-reply" onclick="SX.reply('.$v['id'].');">回复</span>'.(LOGIN ? '<a href="'.URL.'comment/delete/'.get(0).'/'.$v['id'].'" data-pjax="false" onclick="return SX.confirm(this,\'确实要删除吗？删除不可恢复！\')">删除</a>' : '').'</div><div class="comment-content"><p>'.implode('</p><p>', explode("\r\n",$v['content'])).'</p></div></div>';
 		if($v['child']){
 			$html .= getCommentHtml($v['child']);
 		}
