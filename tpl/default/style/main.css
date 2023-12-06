@@ -25,6 +25,7 @@ textarea{color:#525D76;width:100%;resize:none;outline:none;padding:10px;box-sizi
 .tip{background:#f6f6f8;padding:8px 10px;vertical-align:middle;margin-bottom:10px;border-radius:2px;border:1px solid #f3f3f7}
 .tip span{color:#000;font-weight:bold;margin:0px 5px}
 .login{padding:40px;position:absolute;width:600px;height:200px;margin:auto;top:0;left:0;right:0;bottom:0;}
+.login [name=vcode]{width:100px;border-right:none;margin-right:-9px;}
 /* 头部 */
 .header{font-size:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;background:#3E4454;position:fixed;width:100%;top:0;left:0;z-index:9;padding:7px 20px}
 .header .icon-menu{display:none}
@@ -53,6 +54,7 @@ textarea{color:#525D76;width:100%;resize:none;outline:none;padding:10px;box-sizi
 .sidebar-tag{padding:15px}
 /* 验证码 */
 .vcode-img{height:28px;cursor:pointer;vertical-align:middle;}
+.login .vcode-img{border:1px solid #c3c7db;border-radius:2px;border-left-color:#e7e9f6;padding-left:5px;}
 .vcode-input{width:80px;border:none;border-radius:0;border-left:1px solid #c3c7db;height:20px;line-height:20px;}
 /* 评论 */
 .comment{padding:40px}
@@ -155,6 +157,7 @@ body{background:#fff}
 .box{box-shadow:none;flex:0 0 100%}
 .article,.comment,.login{padding:20px}
 .login{width:100%}
+.login [name=password]{width:100%}
 .article-content{margin:20px 0}
 .banner{display:none}
 .header{display:block;}

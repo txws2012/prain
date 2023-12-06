@@ -22,7 +22,7 @@ define('LOGIN', isset($_SESSION['login'])?$_SESSION['login']:false);
 //官网API接口地址
 define('API_HOST','https://prain.cn/api/');
 //清雨版本
-define('V','1.2.7');
+define('V','1.2.8');
 
 //引入库
 include LIB.'function.php';
@@ -35,6 +35,18 @@ include LIB.'file.util.class.php';
 $util = new fileUtil();
 //系统配置
 $conf = db('conf');
+//配置备份与还原
+$confBackup = db('conf.backup');
+if($confBackup){
+	if(!isset($conf['rewrite'])){
+		$conf = $confBackup;
+		dbSave('conf', $confBackup);
+	}elseif($conf != $confBackup){
+		dbSave('conf.backup', $conf);
+	}
+}else{
+	dbSave('conf.backup', $conf);
+}
 //用户配置
 $ini = db('ini');
 //0:线上模式（无错）1:调试模式（无错+日志）2:开发模式（报错+日志）
@@ -86,7 +98,7 @@ $page = get(0,'str','index');
 //后端页面
 $adminPage = get(1,'str','index');
 //后端检测登陆
-if($page == 'admin' && $adminPage != 'login') checkLogin();
+if($page == 'admin' && $adminPage != 'login' && $adminPage != 'prompt') checkLogin();
 //hook钩子名称预设
 //前端
 $hook=[];
@@ -415,20 +427,23 @@ switch($page){
 		if($adminPage == 'login'){
 			$conf['title'] = $conf['title'].'-登录';
 			if($method == 'POST'){
-			    if($_SESSION['loginCount'] > 9) prompt('密码错误次数太多，请好好想想哦！');
-				$password = md5((string)post('password','trim'));
-				if(!empty($password)){
-					if($password === (string)$conf['password']){
-						$_SESSION['login'] = true;
-						$_SESSION['token'] = getToken();
-						foreach($hook['admin_model_login_success'] as $fn) $fn();
-					}else{
-					    $_SESSION['loginCount'] += 1;
-						foreach($hook['admin_model_login_fail'] as $fn) $fn();
-						prompt('密码错误');
-					}
+			    if($_SESSION['loginCount'] > 9 && time()-$_SESSION['loginTime']<1800) prompt('密码错误次数太多啦，请君好好想想，半小时后再登录吧！');
+				$password = post('password','str');
+				$vcode = post('vcode','str');
+				!$password && prompt('密码不能为空');
+				if($conf['vcode']['open']){
+					!$vcode && prompt('验证码不能为空');
+					strtolower($_SESSION['vcode']) !== strtolower($vcode) && prompt('验证码错误');
+				}
+				if(md5($password) === (string)$conf['password']){
+					$_SESSION['login'] = true;
+					$_SESSION['token'] = getToken();
+					foreach($hook['admin_model_login_success'] as $fn) $fn();
 				}else{
-					prompt('密码不能为空');
+					$_SESSION['loginCount'] += 1;
+					$_SESSION['loginTime'] = time();
+					foreach($hook['admin_model_login_fail'] as $fn) $fn();
+					prompt('密码错误');
 				}
 				jump('admin/index');
 			}
@@ -719,8 +734,8 @@ switch($page){
 						// 缩略图
 						$img = '';
 						if($conf['thumb']['open']){
-							preg_match('/(\[img (.*?\.(jpg|jpeg|png|gif|bmp|webp)).*?\])/i', $content, $img);
-							$img = $img ? imgThumb($img[2], $conf['thumb']['width'], $conf['thumb']['height'], $conf['thumb']['type']==1) : '';
+							$img = getContentImg($content);
+							$img = $img ? imgThumb($img[0], $conf['thumb']['width'], $conf['thumb']['height'], $conf['thumb']['type']==1) : '';
 						}
 						$path = 'article/'.$id;
 						if(dbSave($path,$content)){
@@ -785,8 +800,8 @@ switch($page){
 						// 缩略图
 						$img = '';
 						if($conf['thumb']['open']){
-							preg_match('/(\[img (.*?\.(jpg|jpeg|png|gif|bmp|webp)).*?\])/i', $content, $img);
-							$img = $img ? imgThumb($img[2], $conf['thumb']['width'], $conf['thumb']['height'], $conf['thumb']['type']==1) : '';
+							$img = getContentImg($content);
+							$img = $img ? imgThumb($img[0], $conf['thumb']['width'], $conf['thumb']['height'], $conf['thumb']['type']==1) : '';
 						}
 						//判断编辑的文档是不是为上个文档的url，不是的话，删除旧有的数据，建立新数据
 						$name = post('id','trim');

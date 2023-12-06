@@ -21,11 +21,15 @@
 		<div class="icon-menu"><i></i></div>
 		<div class="header-title"><img src="{#LIB_STYLE}logo.svg" alt="{$conf.title}"/>后台管理</div>
 		<div class="header-menu">
+			{if LOGIN}
 			<div class="header-menu-left">
 				<!-- hook.admin_header_menu_left -->
 			</div>
+			{/if}
 			<div class="header-menu-right">
+				{if LOGIN}
 				<!-- hook.admin_header_menu_right -->
+				{/if}
 				<a href="{#HOME}" target="_blank">返回首页</a>
 				{if LOGIN}
 				<!-- hook.admin_header_menu_right_login -->

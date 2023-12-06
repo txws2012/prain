@@ -77,7 +77,7 @@ return [
         'type' => 1,
       ],
       'vcode' => [
-        'open' => true,
+        'open' => false,
         'width' => 80,
         'height' => 23,
         'length' => 4,

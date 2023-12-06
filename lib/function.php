@@ -616,6 +616,16 @@ function curl($url, $params = [], $method = 'POST', $cookie = ''){
     return $response;
 }
 /**
+ * 获取文章的图片
+ * @param string $content 内容
+ * @return array 图片地址
+ */
+function getContentImg($content) {
+	$pattern="/<img.*?src=[\'|\"](.*?(?:[\.gif|\.jpg|\.png|\.webp]))[\'|\"].*?[\/]?>/i";
+	preg_match_all($pattern,$content,$match);
+	return $match[1]?$match[1]:[];
+}
+/**
  * 生成缩略图：
  * @param string $imgUrl 图片的完整路径
  * @param int $width 缩略图宽度
