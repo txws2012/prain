@@ -65,7 +65,7 @@
     <div class="form">
         <div class="key">用户名</div>
         <div class="value">
-            <input type="username" name="username" placeholder="用户名" value="{$conf.username}"/>
+            <input type="text" name="username" placeholder="用户名" value="{$conf.username}"/>
         </div>
     </div>
     <div class="form">
