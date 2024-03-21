@@ -298,7 +298,7 @@ function isHttps() {
  */
 function getHost() {
 	$port = $_SERVER['SERVER_PORT'] != '80' && $_SERVER['SERVER_PORT'] != '443' ? ':'.$_SERVER['SERVER_PORT'] : '';
-	return (isHttps() ? 'https' : 'http').'://'.$_SERVER['SERVER_NAME'].$port;
+	return (isHttps() ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].$port;
 }
 /**
  * 获取完整的URL地址
