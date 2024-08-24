@@ -31,6 +31,13 @@
 					</div>
 					<div class="btn bg-blue" onclick="move('tag')">移动到该标签</div>
 				</div>
+				<div class="form-col">
+					<input type="text" name="search" placeholder="文章搜索"/>
+					<div class="btn" onclick="search()">搜索</div>
+					{if $type == 'search'}
+					<a href="{url admin/article}" class="btn bg-gray ml">返回</a>
+					{/if}
+				</div>
 				<!-- hook.admin_article_menu_left_bottom -->
 			</div>
 			<div class="article-menu-right">
@@ -152,6 +159,12 @@
 			sx.pop(res.message);
 			!res.error && SX.pjax.render();
 		})
+	}
+	//搜索
+	function search(){
+		var name = SX('[name=search]').val().trim();
+		if(!name.length) return SX.pop('搜索内容不能为空');
+		SX.pjax.open('{url admin/article/search/}'+name);
 	}
 </script>
 <!-- hook.admin_article_footer -->

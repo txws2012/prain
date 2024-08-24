@@ -3,7 +3,7 @@
 //#不做处理
 //@数据库文件夹
 return [
-  '#version' => '1.1.5',
+  '#version' => '1.1.6',
   '@article' => [
     'type' => 'files',
   ],
@@ -85,6 +85,7 @@ return [
       'icp' => '',
       'prn' => '',
       'views' => 0,
+      'sensitive' => '',
       'blacklist' => '',
       'tag' => [],
       'ext' => ['app'=>[],'fk-editor'=>[]],

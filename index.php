@@ -22,7 +22,7 @@ define('LOGIN', isset($_SESSION['login'])?$_SESSION['login']:false);
 //官网API接口地址
 define('API_HOST','https://prain.cn/api/');
 //清雨版本
-define('V','1.2.8');
+define('V','1.3.0');
 
 //引入库
 include LIB.'function.php';
@@ -133,7 +133,7 @@ foreach ([
 	//登录
 	'admin_login_header','admin_login_form','admin_login_form_bottom','admin_login_footer',
 	//后端业务层
-	'admin_model_common','admin_model_login_success','admin_model_login_fail','admin_model_navbar','admin_model_category','admin_model_link','admin_model_article_category','admin_model_article_tag','admin_model_article_delete','admin_model_article_move_tag','admin_model_article_move_category','admin_model_article_create','admin_model_article_create_success','admin_model_article_create_fail','admin_model_article_editor','admin_model_article_editor_success','admin_model_article_editor_fail','admin_model_article','admin_model_setting','admin_model_tpl','admin_model_tpl_install','admin_model_tpl_uninstall','admin_model_tpl_delete','admin_model_tpl_download','admin_model_ext','admin_model_ext_install','admin_model_ext_uninstall','admin_model_ext_delete','admin_model_ext_download','admin_model_error','admin_model_default_page',
+	'admin_model_common','admin_model_login_success','admin_model_login_fail','admin_model_navbar','admin_model_category','admin_model_link','admin_model_article_category','admin_model_article_tag','admin_model_article_search','admin_model_article_delete','admin_model_article_move_tag','admin_model_article_move_category','admin_model_article_create','admin_model_article_create_success','admin_model_article_create_fail','admin_model_article_editor','admin_model_article_editor_success','admin_model_article_editor_fail','admin_model_article','admin_model_setting','admin_model_tpl','admin_model_tpl_install','admin_model_tpl_uninstall','admin_model_tpl_delete','admin_model_tpl_download','admin_model_ext','admin_model_ext_install','admin_model_ext_uninstall','admin_model_ext_delete','admin_model_ext_download','admin_model_error','admin_model_default_page',
 	//前端视图层
 	'head_header','meta','css','script','head_footer','body_header','body_footer',
 	//前端业务层
@@ -304,7 +304,7 @@ switch($page){
 			if($conf['vcode']['open'] && (!$vcode || strtolower($_SESSION['vcode']) !== strtolower((string)$vcode))){
 				prompt('验证码不正确');
 			}
-			if($_SESSION['commentCount'] > $conf['comment']['restrict']){
+			if($_SESSION['commentCount'] >= $conf['comment']['restrict']){
 				prompt('每日评论次数不能超过'.$conf['comment']['restrict'].'次哦！');
 			}
 			$articleId = post('page','str');
@@ -317,6 +317,13 @@ switch($page){
 			mb_strlen($name)>20 && prompt('名字不能超过20个字符');
 			mb_strlen($contact)>20 && prompt('联系方式不能超过20个字符');
 			mb_strlen($content) > 2000 && prompt('留言字数不能大于2000');
+			$sensitive = explode(' ',trim($conf['sensitive']));
+			foreach($sensitive as $_s){
+				$_s = trim($_s);
+				if($_s && strpos($content, $_s) !== false) {
+					prompt('您的留言包含敏感信息: 【'.$_s.'】');
+				}
+			}
 			$_SESSION['commentName'] = $name;
 			$_SESSION['commentContact'] = $contact;
 			$comment = db($path);
@@ -475,7 +482,7 @@ switch($page){
 			
 			//查看配置
 			case 'config':
-				echo '<!DOCTYPE html><html lang="zh-Hans"><head><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/><title>server</title></head><body style="font-size:13px;display:flex;"><pre style="flex:0 0 50%;width:50%;white-space:pre-wrap;padding:10px;word-break:break-all;    box-sizing:border-box;">'."\nconfig:\n";
+				echo '<!DOCTYPE html><html lang="zh-Hans"><head><meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/><title>server</title></head><body style="font-size:13px;display:flex;"><pre style="flex:0 0 50%;width:50%;white-space:pre-wrap;padding:10px;word-break:break-all;box-sizing:border-box;">'."\nconfig:\n";
 				print_r($conf);
 				echo '</pre><pre style="flex:0 0 50%;width:50%;white-space:pre-wrap;padding:10px;word-break:break-all;box-sizing:border-box;">'."\nserver:\n";
 				print_r($_SERVER);
@@ -646,6 +653,16 @@ switch($page){
 					$pageSize = $conf['article']['paging'];
 					$article = getArticle(['tag'=>['IN'=>$tag]],[],'admin/article/tag/'.$tag.'/{page}',$pageNum,$pageSize);
 					foreach($hook['admin_model_article_tag'] as $fn) $fn();
+					include $adminTpl->view('article');
+				}
+
+				//搜索
+				if($type == 'search'){
+					$searchName = get(3,'urldecode');
+					$pageNum = get(4,'int',1);
+					$pageSize = $conf['article']['paging'];
+					$article = getArticle(['title'=>['LIKE'=>$searchName]],[],'admin/article/search/'.$searchName.'/{page}',$pageNum,$pageSize);
+					foreach($hook['admin_model_article_search'] as $fn) $fn();
 					include $adminTpl->view('article');
 				}
 
@@ -897,6 +914,7 @@ switch($page){
 					$conf['icp'] = post('icp','str','');
 					$conf['prn'] = post('prn','str','');
 					$conf['views'] = post('views','int',0);
+					$conf['sensitive'] = post('sensitive','str','');
 					$conf['blacklist'] = post('blacklist','str','');
 					$conf['js'] = post('js','str','');
 					foreach($hook['admin_model_setting'] as $fn) $fn();

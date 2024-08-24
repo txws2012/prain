@@ -93,10 +93,11 @@ return array (
     ),
   ),
   'js' => '',
+  'sensitive' => '',
   'install' => false,
   'db' => 
   array (
-    'version' => '1.1.0',
+    'version' => '1.1.6',
   ),
 );
 ?>

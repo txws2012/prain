@@ -167,6 +167,13 @@
         </div>
     </div>
     <div class="form">
+        <div class="key">敏感词</div>
+        <div class="value">
+            <textarea name="sensitive" placeholder="敏感词用空格隔开" rows="3">{$conf.sensitive}</textarea>
+            <small>用于检测并屏蔽评论留言的敏感词，请以空格隔开</small>
+        </div>
+    </div>
+    <div class="form">
         <div class="key">IP黑名单</div>
         <div class="value">
             <textarea name="blacklist" placeholder="黑名单IP用空格隔开" rows="3">{$conf.blacklist}</textarea>
