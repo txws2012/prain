@@ -571,6 +571,7 @@ function getArticle($cond = [], $orderby = [], $url = false, $page = 0, $pagesiz
 				$info['content'] = $fk->html;
 			}
 		}
+		foreach($GLOBALS['hook']['get_article_info'] as $fn) $fn();
 		return $info;
 	}
 	$selList = arrWhere($articleList,$cond, $orderby);
@@ -588,6 +589,7 @@ function getArticle($cond = [], $orderby = [], $url = false, $page = 0, $pagesiz
 	$arr['count'] = count($selList);
 	$arr['list'] = $pagesize ? arrPages($selList,$page, $pagesize) : $selList;
 	if($url) $arr['paging'] = pagesInit($url, $arr['count'], $page, $pagesize);
+	foreach($GLOBALS['hook']['get_article_list'] as $fn) $fn();
 	return $arr;
 }
 /**
@@ -666,6 +668,7 @@ function pagesInit($url, $totalnum, $page, $pagesize = 20){
 		$arr['newx'] = '<a href="'.($page == $totalpage?'javascript:;':$arr['newxUrl']).'" class="paging-next'.($page == $totalpage?' paging-disabled':'').'">下一页</a>';
 		$arr['simple'] = $arr['prev'].$arr['newx'];
 	}
+	foreach($GLOBALS['hook']['pages_init'] as $fn) $fn();
 	return $arr;
 }
 /**
@@ -702,6 +705,7 @@ function getCategory(){
 			'url' => URL.'category/'.$k
 		];
 	}
+	foreach($GLOBALS['hook']['get_category'] as $fn) $fn();
 	return $arr;
 }
 /**
@@ -717,6 +721,7 @@ function tagInit(){
 			}
 		}
 	}
+	foreach($GLOBALS['hook']['tag_init'] as $fn) $fn();
 	dbUpdate('conf',['tag'=>$arr]);
 }
 /**
@@ -734,6 +739,7 @@ function getTag(){
 			'url' => URL.'tag/'.$k
 		];
 	}
+	foreach($GLOBALS['hook']['get_tag'] as $fn) $fn();
 	return $arr;
 }
 /**
@@ -784,6 +790,7 @@ function getComment($id, $cond = [], $orderby = [], $url = false, $page = 0, $pa
 	$arr['list'] = arrPages($comment,$page, $pagesize);
 	$arr['html'] = getCommentHtml($arr['list']);
 	if($url) $arr['paging'] = pagesInit($url, count($comments), $page, $pagesize);
+	foreach($GLOBALS['hook']['get_comment'] as $fn) $fn();
 	return $arr;
 }
 /**
@@ -802,6 +809,7 @@ function getCommentHtml($list){
 		$html .='</li>';
 	}
 	$html .= '</ul>';
+	foreach($GLOBALS['hook']['get_comment_html'] as $fn) $fn();
 	return $html;
 }
 /**
@@ -820,6 +828,7 @@ function delComment($path,$id=false){
 			}
 			$conf = db('conf');
 			$conf['comment']['count'] -= 1;
+			foreach($GLOBALS['hook']['del_comment'] as $fn) $fn();
 			dbDelete($path,['id'=>$id],true);
 			dbSave('conf',$conf);
 			if(!db($path)) $util->delete($dbPath);

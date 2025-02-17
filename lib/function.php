@@ -174,7 +174,8 @@ function save($path,$data){
 	if(is_array($data)){
 		return $util->createFile($path,"<?php\nreturn ".var_export($data, true).";\n?>");
 	}elseif(is_string ($data)){
-		return $util->createFile($path,"<?php\nreturn '".str_replace('\'','\\\'',$data)."';\n?>");
+		$data = str_replace('\'','\\\'',str_replace('\\','\\\\',$data));
+		return $util->createFile($path,"<?php\nreturn '".$data."';\n?>");
 	}else{
 		return $util->createFile($path,"<?php\nreturn ".$data.";\n?>");
 	}

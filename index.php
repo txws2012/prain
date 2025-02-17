@@ -22,7 +22,7 @@ define('LOGIN', isset($_SESSION['login'])?$_SESSION['login']:false);
 //官网API接口地址
 define('API_HOST','https://prain.cn/api/');
 //清雨版本
-define('V','1.3.0');
+define('V','1.3.2');
 
 //引入库
 include LIB.'function.php';
@@ -105,7 +105,8 @@ $hook=[];
 //后端
 foreach ([
 	//全局公共
-	'common','editor','prompt','article_init','category_init',
+	'common','editor','prompt','article_init','category_init','get_article_info','get_article_list','pages_init','get_category',
+	'tag_init','get_tag','get_comment','get_comment_html','del_comment',
 	//后端视图层
 	'admin_head_header','admin_meta','admin_css','admin_script','admin_head_footer','admin_body_header','admin_sidebar_top','admin_sidebar_menu_top','admin_sidebar_menu_1','admin_sidebar_menu_2','admin_sidebar_menu_3','admin_sidebar_menu_bottom','admin_sidebar_bottom','admin_header_menu_left','admin_header_menu_right_login','admin_header_menu_right','admin_content_top','admin_footer','admin_body_footer','admin_body_footer','admin_body_footer','admin_body_footer',
 	//首页模板
@@ -133,7 +134,7 @@ foreach ([
 	//登录
 	'admin_login_header','admin_login_form','admin_login_form_bottom','admin_login_footer',
 	//后端业务层
-	'admin_model_common','admin_model_login_success','admin_model_login_fail','admin_model_navbar','admin_model_category','admin_model_link','admin_model_article_category','admin_model_article_tag','admin_model_article_search','admin_model_article_delete','admin_model_article_move_tag','admin_model_article_move_category','admin_model_article_create','admin_model_article_create_success','admin_model_article_create_fail','admin_model_article_editor','admin_model_article_editor_success','admin_model_article_editor_fail','admin_model_article','admin_model_setting','admin_model_tpl','admin_model_tpl_install','admin_model_tpl_uninstall','admin_model_tpl_delete','admin_model_tpl_download','admin_model_ext','admin_model_ext_install','admin_model_ext_uninstall','admin_model_ext_delete','admin_model_ext_download','admin_model_error','admin_model_default_page',
+	'admin_model_common','admin_model_login_success','admin_model_login_fail','admin_model_navbar_item','admin_model_navbar','admin_model_category_item','admin_model_category','admin_model_link','admin_model_article_category','admin_model_article_tag','admin_model_article_search','admin_model_article_delete','admin_model_article_move_tag','admin_model_article_move_category','admin_model_article_create','admin_model_article_create_success','admin_model_article_create_fail','admin_model_article_editor','admin_model_article_editor_success','admin_model_article_editor_fail','admin_model_article','admin_model_setting','admin_model_tpl','admin_model_tpl_install','admin_model_tpl_uninstall','admin_model_tpl_delete','admin_model_tpl_download','admin_model_ext','admin_model_ext_install','admin_model_ext_uninstall','admin_model_ext_delete','admin_model_ext_download','admin_model_error','admin_model_default_page',
 	//前端视图层
 	'head_header','meta','css','script','head_footer','body_header','body_footer',
 	//前端业务层
@@ -538,12 +539,14 @@ switch($page){
 						foreach($name as $k => $v){
 							!$v && err('名称不能为空');
 							!$url[$k] && err('链接不能为空');
-							$post[] = [
+							$navbar = [
 								'name' => $v,
 								'url' => $url[$k],
 								'target' => in_array((string)$k,$target) ? 1 : 0,
 								'child' => [],
 							];
+							foreach($hook['admin_model_navbar_item'] as $fn) $fn();
+							$post[] = $navbar;
 						}
 
 					}
@@ -579,6 +582,7 @@ switch($page){
 								'intro' => $intro[$k],
 								'count' => 0,
 							];
+							foreach($hook['admin_model_category_item'] as $fn) $fn();
 							$post[$v] = $category;
 						}
 						if($modifyId){

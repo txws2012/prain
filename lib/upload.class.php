@@ -172,7 +172,7 @@ class Upload{
         }
         //文件类型是否符合要求
         if($this->allowExt){
-            $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
             if (!in_array($ext, $this->allowExt)) {
                 throw new Exception('不符合要求的文件类型');
             }
