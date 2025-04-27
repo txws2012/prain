@@ -77,7 +77,7 @@ table th{vertical-align:bottom;border-bottom:none;white-space:nowrap;padding:6px
 .color{color:#FB7A89}
 .u{text-decoration:underline;color:#7AA9FB}
 .line{height:12px;background:linear-gradient(135deg,transparent,transparent 43%,#7F94B3,transparent 50%,transparent 100%) 0% 0% / 12px 11px repeat-x,linear-gradient(45deg,transparent,transparent 43%,#7F94B3,transparent 50%,transparent 100%) repeat-x}
-.btn{color:white;background:#697185;padding:0px 25px;border:none;height:25px;line-height:25px;margin:10px 0px;display:inline-block;cursor:pointer;vertical-align:middle;border-radius:var(--radius);white-space:nowrap;text-decoration:none!important}
+.btn{color:white;background: #5c626e;padding:0px 25px;border:none;height:25px;line-height:25px;margin:10px 0px;display:inline-block;cursor:pointer;vertical-align:middle;border-radius:var(--radius);white-space:nowrap;text-decoration:none!important}
 .btn:hover{color:#FFF;background:#545e74}
 .indent{text-indent:2em}
 .flex{display:flex;align-items:center}
@@ -110,7 +110,7 @@ table th{vertical-align:bottom;border-bottom:none;white-space:nowrap;padding:6px
 .info-item{background:#ececf0;padding:5px 20px;margin:0px 9px 9px 0px;white-space:nowrap;border-radius:2px}
 .info-item span,.info-text span{font-weight:bold;color:#000}
 .info-text{margin-right:25px}
-.header{font-size:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;background:#3E4454;position:fixed;width:100%;top:0px;left:0px;z-index:9;padding:7px 20px}
+.header{font-size:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;background: #3b3f4a;position:fixed;width:100%;top:0px;left:0px;z-index:9;min-height: 34px;padding:7px 20px}
 .header .icon-menu{display:none}
 .header-title{flex-wrap:nowrap;display:flex;align-items:center;color:#E9EEFF;width: 180px;font-size: 14px;}
 .header-title a{color:#FFF;text-decoration:none}
@@ -118,7 +118,7 @@ table th{vertical-align:bottom;border-bottom:none;white-space:nowrap;padding:6px
 .header-menu{display:flex;flex-wrap:wrap;align-items:center;flex:1}
 .header a{padding:0 5px;text-decoration:none;font-size:14px;color:#E9EEFF}
 .header a:hover{text-decoration:none}
-.header-menu a:hover{color:#dce1fe}
+.header-menu a:hover{color: #acb8ff;}
 .header-menu-left a:first-child{border-left:1px solid #6c718c;padding-left:16px}
 .header-menu-right{margin-left:auto}
 .footer{padding:0px 30px 30px;background:#FFF}
@@ -127,8 +127,8 @@ table th{vertical-align:bottom;border-bottom:none;white-space:nowrap;padding:6px
 .footer-bar a{color:#6A7091;padding:0px 5px;font-size:14px}
 .footer-bar a.icp{color:#EFF1FA;margin-left:20px}
 .footer-bar .right span{font-size:13px;font-weight:100}
-.sidebar{background:#697185;color:#FFF;width:200px;height:100%;position:fixed;left:0px;top:34px;z-index:5;padding:30px 0px;text-align:center}
-.menu a.active::before{content:"";display:block;position:absolute;right:-1px;top:6px;width:0px;height:0px;font-size:0px;line-height:0;border-width:10px 8px;border-style:dashed solid dashed dashed;border-color:transparent #FFF transparent transparent}
+.sidebar{background: #5c626e;color:#FFF;width:200px;height:100%;position:fixed;left:0px;top:34px;z-index:5;padding:30px 0px;text-align:center}
+.menu a.active::before{content:"";display:block;position:absolute;right:-1px;top: 7px;width:0px;height:0px;font-size:0px;line-height:0;border-width:10px 8px;border-style:dashed solid dashed dashed;border-color:transparent #FFF transparent transparent}
 .sidebar:last-child{border-right:none}
 .sidebar-name{margin:5px 0px 50px;font-size:17px}
 .sidebar-logo{margin-bottom:20px;color:#8B94CD}
@@ -137,9 +137,9 @@ table th{vertical-align:bottom;border-bottom:none;white-space:nowrap;padding:6px
 .sidebar + .content{padding:0px 20px}
 .logo{text-align:center;font-size:80px;color:#FFF}
 .menu{position:relative}
-.menu a{color:#E9EEFF;padding:0px 25px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;text-decoration:none!important}
-.menu a:hover{background:#5c6478}
-.menu a.active{color:#E9EEFF;background:#586176}
+.menu a{color:#E9EEFF;padding:0px 25px;height: 35px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;text-decoration:none!important;}
+.menu a:hover{background: #4d515c;}
+.menu a.active{color:#E9EEFF;background: #494e59;}
 .main{position:relative;margin:35px 0 0 200px;display:flex;flex-direction:column;min-height:calc(100vh - 35px)}
 .content .title:first-child{margin-top:0px}
 .pjax-content{width:100%}
