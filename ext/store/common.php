@@ -53,6 +53,7 @@ function storeIconUrl($id){
 }
 
 function storeHandleApi(){
+	if(session_status() === PHP_SESSION_ACTIVE) session_write_close();
 	storeInitDb();
 	$endpoint = get(1,'str','');
 	$sub = get(2,'str','');
