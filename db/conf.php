@@ -49,6 +49,7 @@ return array (
   ),
   'ext' => 
   array (
+    'store'=>1,
     'app'=>1,
     'fk-editor'=>1,
   ),
