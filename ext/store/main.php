@@ -17,7 +17,8 @@ if($page == 'admin' && $adminPage == 'store'){
 		$users = db('store/user') ?: [];
 		$comments = db('store/comment') ?: [];
 		$published = 0;
-		foreach($apps as $a){ if($a['status'] === 'published') $published++; }
+		foreach($apps as &$a){ $a['icon'] = HOME.'ext/store/data/'.$a['id'].'/icon.png'; if($a['status'] === 'published') $published++; }
+		unset($a);
 		include $storeAdminTpl->view('store');
 		exit;
 	}
