@@ -6,8 +6,8 @@ if($page == 'api'){
 if($page == 'admin' && $adminPage == 'store'){
 	if(!LOGIN) jump('admin/login');
 	$storeAdminTpl = new Tpl([
-		'path' => '/lib/',
-		'name' => 'admin',
+		'path' => '/ext/',
+		'name' => 'store',
 		'compile' => $conf['compile'],
 	]);
 	$storePage = get(2,'str','index');
@@ -19,6 +19,7 @@ if($page == 'admin' && $adminPage == 'store'){
 		$published = 0;
 		foreach($apps as &$a){ $a['icon'] = HOME.'ext/store/data/'.$a['id'].'/icon.png'; if($a['status'] === 'published') $published++; }
 		unset($a);
+		$html = storeAdminIndexHtml($apps, $users, $published);
 		include $storeAdminTpl->view('store');
 		exit;
 	}
@@ -114,12 +115,14 @@ if($page == 'admin' && $adminPage == 'store'){
 			dbSave('store/user', array_merge($users));
 			jump('admin/store/user');
 		}
-		include $storeAdminTpl->view('store_user');
+		$html = storeAdminUserHtml($users);
+		include $storeAdminTpl->view('store');
 		exit;
 	}
 
 	if($storePage == 'import'){
-		include $storeAdminTpl->view('store_import');
+		$html = storeAdminImportHtml();
+		include $storeAdminTpl->view('store');
 		exit;
 	}
 }

@@ -795,3 +795,63 @@ function storeApiSystem($params){
 		.'<div class="tip">应用数量：'.count($apps ?: []).' · 用户数量：'.count($users ?: []).' · 评论数量：'.count($comments ?: []).'</div>';
 	return $html;
 }
+
+function storeAdminIndexHtml($apps, $users, $published){
+	$html = '<div class="headline">应用市场管理</div>'
+		.'<div class="tip">一共<span>'.count($apps).'</span>个应用 ‧ 已上架<span>'.$published.'</span>个 · <a href="'.URL.'admin/store/import" class="red">导入应用</a></div>';
+	if($apps){
+		$html .= '<div class="title">应用列表</div><ul class="ext">';
+		foreach($apps as $item){
+			$liClass = $item['status'] === 'published' ? 'ext-uninstall' : 'ext-install';
+			$priceHtml = $item['price'] > 0 ? '<span class="tpl-price">￥'.$item['price'].'</span>' : '<span class="green">免费</span>';
+			$statusHtml = $item['status'] === 'published' ? '<span class="green">已上架</span>' : '<span style="color:#999;">未上架</span>';
+			$toggleLabel = $item['status'] === 'published' ? '下架' : '上架';
+			$html .= '<li class="'.$liClass.'">'
+				.'<div class="ext-icon"><img src="'.$item['icon'].'"/></div>'
+				.'<div class="ext-info"><div class="ext-name">'
+				.htmlspecialchars($item['name']).'<span class="ext-version">v'.htmlspecialchars($item['version']).'</span>'
+				.$priceHtml.$statusHtml
+				.'<a href="'.URL.'admin/store/app/toggle/'.$item['id'].'" class="ext-btn">'.$toggleLabel.'</a>'
+				.'<a href="'.URL.'admin/store/app/delete/'.$item['id'].'" class="ext-btn bg-red" onclick="return SX.confirm(this,\'确定删除？\')">删除</a>'
+				.'</div>'
+				.'<div class="ext-intro">'.htmlspecialchars($item['intro']).' ‧ '.$item['type'].' ‧ 下载'.($item['downloadCount'] ?? 0).'次 ‧ 作者：'.htmlspecialchars($item['author']).'</div>'
+				.'</div></li>';
+		}
+		$html .= '</ul>';
+	}
+	$html .= '<div class="title">用户管理</div>'
+		.'<div class="tip">一共<span>'.count($users).'</span>个用户 · <a href="'.URL.'admin/store/user">管理用户</a></div>';
+	return $html;
+}
+
+function storeAdminUserHtml($users){
+	$html = '<div class="headline">用户管理</div>'
+		.'<div class="tip">一共<span>'.count($users).'</span>个用户 · <a href="'.URL.'admin/store">返回应用管理</a></div>';
+	if($users){
+		$html .= '<ul class="ext">';
+		foreach($users as $item){
+			$devHtml = !empty($item['isDeveloper']) ? '<span class="green">开发者</span>' : '';
+			$toggleLabel = !empty($item['isDeveloper']) ? '取消开发者' : '设为开发者';
+			$html .= '<li class="ext-uninstall"><div class="ext-info"><div class="ext-name">'
+				.htmlspecialchars($item['username']).'<span class="ext-version">ID:'.$item['id'].'</span>'
+				.$devHtml
+				.'<a href="'.URL.'admin/store/user/toggleDev/'.$item['id'].'" class="ext-btn">'.$toggleLabel.'</a>'
+				.'<a href="'.URL.'admin/store/user/delete/'.$item['id'].'" class="ext-btn bg-red" onclick="return SX.confirm(this,\'确定删除？\')">删除</a>'
+				.'</div>'
+				.'<div class="ext-intro">余额：￥'.number_format($item['balance'],2).' ‧ 注册：'.humanDate($item['createTime']).' ‧ 邮箱：'.htmlspecialchars($item['mail'] ?? '').'</div>'
+				.'</div></li>';
+		}
+		$html .= '</ul>';
+	}
+	return $html;
+}
+
+function storeAdminImportHtml(){
+	$html = '<div class="headline">导入应用</div>'
+		.'<div class="tip">上传.sx格式的应用包文件进行导入 · <a href="'.URL.'admin/store">返回应用管理</a></div>'
+		.'<form enctype="multipart/form-data" method="POST" action="'.URL.'admin/store/app/upload">'
+		.'<div class="form"><div class="key">应用包</div><div class="value"><input type="file" name="file" accept=".sx"/></div></div>'
+		.'<div class="form"><div class="key"></div><div class="value"><div class="btn" onclick="this.closest(\'form\').submit()">上传导入</div></div></div>'
+		.'</form>';
+	return $html;
+}
