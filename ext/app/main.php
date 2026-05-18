@@ -31,7 +31,7 @@ if(($page == 'admin' && $adminPage == 'app') || $page == 'pay'){
 		$tpl = getTpl();
 		$ext = getExt();
 		$res = curl('https://prain.cn/api/'.$url,array_merge($userKey,[
-			'appVersion' => '1.0.9',
+			'appVersion' => '1.1.0',
 			'system'=>[
 				'version'=>V,
 				'dbVersion'=>$conf['db']['version']
@@ -132,14 +132,14 @@ if($page == 'admin' && $adminPage == 'app'){
 	}
 	//主题列表
 	if($appPage == 'tpl'){
-		$pageNum = get(4,'int',1);
+		$pageNum = get(3,'int',1);
 		$pageSize = 30;
 		$html = getApi('tpl',['page'=>$pageNum,'size'=>$pageSize]);
 		include $appTpl->view('app');
 	}
 	//扩展列表
 	elseif($appPage == 'ext'){
-		$pageNum = get(4,'int',1);
+		$pageNum = get(3,'int',1);
 		$pageSize = 30;
 		$html = getApi('ext',['page'=>$pageNum,'size'=>$pageSize]);
 		include $appTpl->view('app');
@@ -202,8 +202,7 @@ if($page == 'admin' && $adminPage == 'app'){
 	//销售记录
 	elseif($appPage == 'sales'){
 		$html = getApi('sales',[
-			'page'=> get(3,'int',1),
-			'size'=> get(3,'int',30),
+			'page'=> get(3,'int',1)
 		]);
 		include $appTpl->view('app');
 	}
@@ -214,8 +213,7 @@ if($page == 'admin' && $adminPage == 'app'){
 			$res['error'] ? err($res['message']) : msg($res['message']);
 		}
 		$html = getApi('withdraw',[
-			'page'=> get(3,'int',1),
-			'size'=> get(3,'int',30),
+			'page'=> get(3,'int',1)
 		]);
 		include $appTpl->view('app');
 	}
@@ -383,6 +381,6 @@ if($page == 'admin' && $adminPage == 'app'){
 		$tpl->compile();
 		msg('安装成功');
 	}
-	exit;
+	// exit;
 }
 ?>
